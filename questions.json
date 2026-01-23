@@ -1,87 +1,127 @@
 {
-  "title": "Economía Internacional",
+  "title": "Econometría de Series de Tiempo",
   "teacher": "William Mendieta",
   "secondsPerQuestion": 60,
   "questions": [
     {
       "id": 1,
-      "text": "¿Cuál es el objetivo principal de la política monetaria?",
+      "text": "¿Cuál es el principal supuesto de estacionariedad débil en una serie de tiempo?",
       "options": [
-        "Aumentar el gasto público",
-        "Estabilizar precios y actividad económica",
-        "Fijar salarios en el sector privado",
-        "Reducir impuestos de forma permanente"
+        "Que la serie no tenga tendencia determinística",
+        "Que la media, varianza y covarianza dependan del tiempo",
+        "Que la media y la varianza sean constantes y la covarianza dependa solo del rezago",
+        "Que la serie tenga una raíz unitaria"
       ],
-      "correctIndex": 1,
-      "explanation": "En marcos modernos, el banco central busca estabilidad de precios y suavizar fluctuaciones del ciclo; la tasa de política influye en condiciones financieras y demanda agregada."
+      "correctIndex": 2,
+      "explanation": "La estacionariedad débil requiere media y varianza constantes en el tiempo, y que la covarianza entre dos períodos dependa únicamente del rezago, no del tiempo específico."
     },
     {
       "id": 2,
-      "text": "¿Qué es el PIB real?",
+      "text": "¿Qué indica la presencia de una raíz unitaria en una serie de tiempo?",
       "options": [
-        "PIB medido a precios corrientes",
-        "PIB ajustado por inflación",
-        "Ingresos fiscales del gobierno",
-        "Exportaciones netas"
+        "Que la serie es estacionaria alrededor de una media constante",
+        "Que los choques tienen efectos permanentes",
+        "Que los errores del modelo son ruido blanco",
+        "Que la varianza es constante en el tiempo"
       ],
       "correctIndex": 1,
-      "explanation": "El PIB real descuenta el efecto de precios para reflejar cambios en cantidades (actividad) y no solo variaciones nominales."
+      "explanation": "Una raíz unitaria implica que los choques afectan permanentemente el nivel de la serie, lo que caracteriza a una serie no estacionaria."
     },
     {
       "id": 3,
-      "text": "Pregunta 3 (placeholder)",
-      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
-      "correctIndex": 0,
-      "explanation": "Explicación breve aquí."
+      "text": "¿Cuál es el objetivo principal de diferenciar una serie de tiempo?",
+      "options": [
+        "Eliminar autocorrelación serial",
+        "Reducir la varianza de la serie",
+        "Eliminar la estacionalidad determinística",
+        "Lograr estacionariedad"
+      ],
+      "correctIndex": 3,
+      "explanation": "La diferenciación se utiliza principalmente para eliminar tendencias estocásticas y convertir una serie no estacionaria en estacionaria."
     },
     {
       "id": 4,
-      "text": "Pregunta 4 (placeholder)",
-      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
-      "correctIndex": 0,
-      "explanation": "Explicación breve aquí."
+      "text": "En un modelo AR(1), ¿qué representa el parámetro autorregresivo?",
+      "options": [
+        "La varianza del término de error",
+        "La correlación entre la serie y su primer rezago",
+        "El impacto del error contemporáneo",
+        "La media incondicional de la serie"
+      ],
+      "correctIndex": 1,
+      "explanation": "En un AR(1), el coeficiente autorregresivo mide la relación entre el valor actual de la serie y su primer rezago."
     },
     {
       "id": 5,
-      "text": "Pregunta 5 (placeholder)",
-      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
-      "correctIndex": 0,
-      "explanation": "Explicación breve aquí."
+      "text": "¿Qué patrón en la función de autocorrelación (ACF) sugiere un proceso MA(q)?",
+      "options": [
+        "La ACF decae gradualmente",
+        "La ACF se corta después de q rezagos",
+        "La PACF se corta después de q rezagos",
+        "La ACF es cero en todos los rezagos"
+      ],
+      "correctIndex": 1,
+      "explanation": "Un proceso MA(q) se caracteriza porque la ACF se corta abruptamente después de q rezagos, mientras la PACF decae gradualmente."
     },
     {
       "id": 6,
-      "text": "Pregunta 6 (placeholder)",
-      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
+      "text": "¿Cuál es la diferencia clave entre un modelo AR y un modelo MA?",
+      "options": [
+        "El AR usa rezagos de la variable, el MA usa rezagos del error",
+        "El AR es estacionario y el MA no",
+        "El MA tiene tendencia y el AR no",
+        "El AR solo se usa en series financieras"
+      ],
       "correctIndex": 0,
-      "explanation": "Explicación breve aquí."
+      "explanation": "Los modelos AR dependen de rezagos de la variable dependiente, mientras que los modelos MA dependen de rezagos del término de error."
     },
     {
       "id": 7,
-      "text": "Pregunta 7 (placeholder)",
-      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
-      "correctIndex": 0,
-      "explanation": "Explicación breve aquí."
+      "text": "¿Para qué se utiliza principalmente la prueba de Dickey-Fuller aumentada (ADF)?",
+      "options": [
+        "Para detectar autocorrelación en los residuos",
+        "Para identificar el orden AR y MA",
+        "Para evaluar la presencia de raíz unitaria",
+        "Para contrastar normalidad de los errores"
+      ],
+      "correctIndex": 2,
+      "explanation": "La prueba ADF se utiliza para contrastar la hipótesis nula de raíz unitaria, es decir, no estacionariedad."
     },
     {
       "id": 8,
-      "text": "Pregunta 8 (placeholder)",
-      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
-      "correctIndex": 0,
-      "explanation": "Explicación breve aquí."
+      "text": "¿Qué significa que los residuos de un modelo sean ruido blanco?",
+      "options": [
+        "Que siguen una distribución normal",
+        "Que no presentan autocorrelación ni media distinta de cero",
+        "Que tienen varianza creciente en el tiempo",
+        "Que están correlacionados con la variable dependiente"
+      ],
+      "correctIndex": 1,
+      "explanation": "El ruido blanco implica media cero, varianza constante y ausencia de autocorrelación serial en los residuos."
     },
     {
       "id": 9,
-      "text": "Pregunta 9 (placeholder)",
-      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
-      "correctIndex": 0,
-      "explanation": "Explicación breve aquí."
+      "text": "¿Cuál es el propósito del criterio de información de Akaike (AIC)?",
+      "options": [
+        "Probar estacionariedad",
+        "Seleccionar el modelo con mejor ajuste y menor complejidad",
+        "Evaluar autocorrelación parcial",
+        "Determinar el número óptimo de diferencias"
+      ],
+      "correctIndex": 1,
+      "explanation": "El AIC penaliza la complejidad del modelo y busca un balance entre buen ajuste y parsimonia."
     },
     {
       "id": 10,
-      "text": "Pregunta 10 (placeholder)",
-      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
-      "correctIndex": 0,
-      "explanation": "Explicación breve aquí."
+      "text": "¿Por qué es importante verificar autocorrelación en los residuos de un modelo de series de tiempo?",
+      "options": [
+        "Porque invalida la estimación de los coeficientes",
+        "Porque indica mala especificación del modelo",
+        "Porque garantiza estacionariedad",
+        "Porque asegura normalidad de los errores"
+      ],
+      "correctIndex": 1,
+      "explanation": "La autocorrelación en los residuos sugiere que el modelo no capturó toda la dinámica temporal de la serie."
     }
   ]
 }
