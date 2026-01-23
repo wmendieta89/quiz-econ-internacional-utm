@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Quiz — Economía Internacional</title>
+  <title>Quiz</title>
   <style>
     :root { --bg:#0b1220; --text:#eaf0ff; --muted:rgba(234,240,255,.75); --border:rgba(234,240,255,.12); }
     *{box-sizing:border-box}
@@ -48,7 +48,10 @@
     }
     .question{display:grid;gap:12px}
     .qmeta{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);font-size:13px;flex-wrap:wrap}
-    .qtext{font-size:20px;font-weight:650;line-height:1.25;margin:0}
+    .qtext{
+      font-size:20px;font-weight:650;line-height:1.25;margin:0;
+      overflow-wrap:anywhere; word-break:break-word;
+    }
     .options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
     @media (max-width:720px){.options{grid-template-columns:1fr}}
     button.opt{
@@ -64,7 +67,7 @@
       display:flex;
       gap:10px;
       align-items:flex-start;
-      min-height:58px;
+      min-height:64px; /* mejor para celular */
     }
     button.opt:hover{transform:translateY(-1px);border-color:rgba(234,240,255,.25)}
     button.opt:active{transform:translateY(0)}
@@ -74,7 +77,10 @@
       border:1px solid var(--border);background:rgba(255,255,255,.04);
       flex:0 0 auto;font-weight:700;color:rgba(234,240,255,.9)
     }
-    .opt .label{font-size:15px;line-height:1.25;margin-top:2px}
+    .opt .label{
+      font-size:15px;line-height:1.25;margin-top:2px;
+      white-space:normal; overflow-wrap:anywhere; word-break:break-word;
+    }
     .actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;flex-wrap:wrap}
     .state{display:inline-flex;gap:8px;align-items:center;color:var(--muted);font-size:14px}
     .btn{
@@ -101,6 +107,28 @@
     }
     footer{color:rgba(234,240,255,.55);font-size:12px;text-align:center;margin-top:2px}
     a{color:rgba(234,240,255,.85);text-decoration:none;border-bottom:1px dashed rgba(234,240,255,.35)}
+
+    /* ===== MODAL (pop-up) ===== */
+    .modal-backdrop{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:9999;
+    }
+    .modal{
+      width:min(520px, 100%);
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border-radius:16px;
+      box-shadow:0 20px 70px rgba(0,0,0,.55);
+      padding:16px;
+    }
+    .modal h3{margin:0 0 8px 0; font-size:16px;}
+    .modal p{margin:0; color:var(--muted); line-height:1.45; font-size:14px;}
+    .modal .row{display:flex; justify-content:flex-end; gap:10px; margin-top:14px; flex-wrap:wrap;}
   </style>
 </head>
 <body>
@@ -108,14 +136,14 @@
 
     <header>
       <div class="title">
-        <h1 id="className">Economía Internacional</h1>
-        <p><span id="teacherName">Profesor: William Mendieta</span></p>
+        <h1 id="className">Cargando…</h1>
+        <p><span id="teacherName">Profesor: —</span></p>
       </div>
 
       <div class="pills">
         <div class="pill" title="Progreso">
           <span class="dot" aria-hidden="true"></span>
-          <span id="progressText">0 de 10</span>
+          <span id="progressText">0 de 0</span>
         </div>
         <div class="pill" title="Tiempo restante">
           <span class="dot" aria-hidden="true"></span>
@@ -124,6 +152,7 @@
       </div>
     </header>
 
+    <!-- Pantalla inicial -->
     <section class="card" id="startScreen" aria-live="polite">
       <div class="qmeta">
         <span style="font-weight:700;">Antes de empezar</span>
@@ -140,7 +169,6 @@
           <span style="color: var(--muted); font-size:13px;">Nombre del estudiante</span>
           <input id="studentNameInput" type="text" placeholder="Ej.: Juan Mendieta" autocomplete="name" />
         </label>
-        <div id="startError" style="display:none; color: rgba(239,68,68,0.9); font-size: 13px;"></div>
 
         <div style="display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap;">
           <button class="btn primary" id="startBtn" type="button" disabled>Iniciar</button>
@@ -148,6 +176,7 @@
       </div>
     </section>
 
+    <!-- Pantalla del quiz -->
     <section class="card question" id="quizScreen" aria-live="polite" style="display:none;">
       <div class="qmeta">
         <span id="statusText">Elige la respuesta correcta.</span>
@@ -155,7 +184,6 @@
       </div>
 
       <p class="qtext" id="questionText">—</p>
-
       <div class="options" id="options"></div>
 
       <div class="actions">
@@ -171,13 +199,24 @@
     </section>
 
     <footer>
-      Para compartir: súbelo a <a href="https://pages.github.com/" target="_blank" rel="noreferrer">GitHub Pages</a> o a <a href="https://www.netlify.com/" target="_blank" rel="noreferrer">Netlify</a> (gratis).
+      Compatible con celular ✅ (diseño responsivo).
     </footer>
 
   </main>
 
+  <!-- MODAL -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <h3 id="modalTitle">Aviso</h3>
+      <p id="modalMessage">—</p>
+      <div class="row">
+        <button class="btn primary" id="modalOkBtn" type="button">Entendido</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // 1) Endpoint (Google Apps Script)
+    // ====== ENDPOINT (Google Apps Script) ======
     const ENDPOINT = "https://script.google.com/macros/s/AKfycbyoQyDpwZbjDcflfPcrCXMfKjtO5cLNXTMSF-aFltI3zwEkoSDIZhkG7-ZNEgl17dCP/exec";
 
     async function postToEndpoint(payload) {
@@ -197,49 +236,15 @@
       return await postToEndpoint({ action: "submit", ...payload });
     }
 
-    // 2) Quiz data (10 preguntas)
-    const QUESTIONS = [
-      {
-        id: 1,
-        text: "¿Cuál es el objetivo principal de la política monetaria?",
-        options: [
-          "Aumentar el gasto público",
-          "Estabilizar precios y actividad económica",
-          "Fijar salarios en el sector privado",
-          "Reducir impuestos de forma permanente"
-        ],
-        correctIndex: 1,
-        explanation: "En marcos modernos, el banco central busca estabilidad de precios y suavizar fluctuaciones del ciclo; la tasa de política influye en condiciones financieras y demanda agregada."
-      },
-      {
-        id: 2,
-        text: "(Ejemplo) ¿Qué es el PIB real?",
-        options: [
-          "PIB medido a precios corrientes",
-          "PIB ajustado por inflación",
-          "Ingresos fiscales del gobierno",
-          "Exportaciones netas"
-        ],
-        correctIndex: 1,
-        explanation: "El PIB real descuenta el efecto de precios para reflejar cambios en cantidades (actividad) y no solo variaciones nominales."
-      },
-      { id: 3, text: "Pregunta 3 (placeholder)", options: ["Opción A", "Opción B", "Opción C", "Opción D"], correctIndex: 0, explanation: "Explicación breve aquí (por qué la opción correcta lo es)." },
-      { id: 4, text: "Pregunta 4 (placeholder)", options: ["Opción A", "Opción B", "Opción C", "Opción D"], correctIndex: 0, explanation: "Explicación breve aquí (por qué la opción correcta lo es)." },
-      { id: 5, text: "Pregunta 5 (placeholder)", options: ["Opción A", "Opción B", "Opción C", "Opción D"], correctIndex: 0, explanation: "Explicación breve aquí (por qué la opción correcta lo es)." },
-      { id: 6, text: "Pregunta 6 (placeholder)", options: ["Opción A", "Opción B", "Opción C", "Opción D"], correctIndex: 0, explanation: "Explicación breve aquí (por qué la opción correcta lo es)." },
-      { id: 7, text: "Pregunta 7 (placeholder)", options: ["Opción A", "Opción B", "Opción C", "Opción D"], correctIndex: 0, explanation: "Explicación breve aquí (por qué la opción correcta lo es)." },
-      { id: 8, text: "Pregunta 8 (placeholder)", options: ["Opción A", "Opción B", "Opción C", "Opción D"], correctIndex: 0, explanation: "Explicación breve aquí (por qué la opción correcta lo es)." },
-      { id: 9, text: "Pregunta 9 (placeholder)", options: ["Opción A", "Opción B", "Opción C", "Opción D"], correctIndex: 0, explanation: "Explicación breve aquí (por qué la opción correcta lo es)." },
-      { id: 10, text: "Pregunta 10 (placeholder)", options: ["Opción A", "Opción B", "Opción C", "Opción D"], correctIndex: 0, explanation: "Explicación breve aquí (por qué la opción correcta lo es)." }
-    ];
-
-    // 3) UI refs
+    // ====== UI refs ======
     const startScreen = document.getElementById('startScreen');
     const quizScreen = document.getElementById('quizScreen');
 
     const studentNameInput = document.getElementById('studentNameInput');
     const startBtn = document.getElementById('startBtn');
-    const startError = document.getElementById('startError');
+
+    const classNameEl = document.getElementById('className');
+    const teacherNameEl = document.getElementById('teacherName');
 
     const progressText = document.getElementById('progressText');
     const timerText = document.getElementById('timerText');
@@ -250,20 +255,47 @@
     const optionsWrap = document.getElementById('options');
     const nextBtn = document.getElementById('nextBtn');
 
-    // 4) Config + State
-    const SECONDS_PER_QUESTION = 60;
+    // Modal refs
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalOkBtn = document.getElementById('modalOkBtn');
 
+    // ====== Data (se carga desde questions.json) ======
+    let QUESTIONS = [];
+    let SECONDS_PER_QUESTION = 60;
+
+    async function loadQuestions() {
+      const res = await fetch("./questions.json", { cache: "no-store" });
+      const data = await res.json();
+
+      classNameEl.textContent = data.title || "Quiz";
+      teacherNameEl.textContent = `Profesor: ${data.teacher || "—"}`;
+
+      SECONDS_PER_QUESTION = Number(data.secondsPerQuestion || 60);
+      QUESTIONS = Array.isArray(data.questions) ? data.questions : [];
+
+      progressText.textContent = `0 de ${QUESTIONS.length}`;
+      timerText.textContent = "—";
+
+      // Validación básica
+      if (QUESTIONS.length === 0) {
+        showModal("No hay preguntas en questions.json. Agrega al menos 1 pregunta para iniciar.");
+        startBtn.disabled = true;
+      }
+    }
+
+    // ====== State ======
     let studentName = "";
     let startedAtISO = "";
 
     let qIndex = 0;
     let pendingPick = null;
-    const answers = Array(QUESTIONS.length).fill(null);
+    let answers = []; // se crea con el tamaño de QUESTIONS
 
     let timerId = null;
-    let remaining = SECONDS_PER_QUESTION;
+    let remaining = 0;
 
-    // 5) Helpers
+    // ====== Helpers ======
     function nowISO() { return new Date().toISOString(); }
 
     function pad2(n) { return String(n).padStart(2, '0'); }
@@ -272,6 +304,32 @@
       const s = sec % 60;
       return `${pad2(m)}:${pad2(s)}`;
     }
+
+    function normalizeName(s) { return (s || "").trim(); }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function safeFilenameFromName(name) {
+      const parts = String(name).trim().split(' ').filter(Boolean);
+      return parts.join('_');
+    }
+
+    // ====== Modal ======
+    function showModal(message) {
+      modalMessage.textContent = message;
+      modalBackdrop.style.display = "flex";
+    }
+    function hideModal() {
+      modalBackdrop.style.display = "none";
+    }
+    modalOkBtn.addEventListener("click", hideModal);
 
     function stopTimer() {
       if (timerId) {
@@ -288,7 +346,7 @@
       timerId = setInterval(() => {
         remaining -= 1;
         if (remaining <= 0) {
-          timerText.textContent = '00:00';
+          timerText.textContent = "00:00";
           stopTimer();
           commitAndAdvance(true);
           return;
@@ -297,20 +355,100 @@
       }, 1000);
     }
 
-    function normalizeName(s) {
-      return (s || '').trim();
-    }
-
-    function setStartError(msg) {
-      startError.style.display = msg ? 'block' : 'none';
-      startError.textContent = msg || '';
-    }
-
     function updateStartButton() {
       const name = normalizeName(studentNameInput.value);
-      startBtn.disabled = name.length === 0;
-      setStartError('');
+      startBtn.disabled = (name.length === 0 || QUESTIONS.length === 0);
     }
+    // ====== ENDPOINT (Google Apps Script) ======
+    const ENDPOINT = "https://script.google.com/macros/s/AKfycbyoQyDpwZbjDcflfPcrCXMfKjtO5cLNXTMSF-aFltI3zwEkoSDIZhkG7-ZNEgl17dCP/exec";
+
+    async function postToEndpoint(payload) {
+      const res = await fetch(ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      return await res.json();
+    }
+
+    async function validateStudent(name) {
+      return await postToEndpoint({ action: "validate", name });
+    }
+
+    async function submitAttempt(payload) {
+      return await postToEndpoint({ action: "submit", ...payload });
+    }
+
+    // ====== UI refs ======
+    const startScreen = document.getElementById('startScreen');
+    const quizScreen = document.getElementById('quizScreen');
+
+    const studentNameInput = document.getElementById('studentNameInput');
+    const startBtn = document.getElementById('startBtn');
+
+    const classNameEl = document.getElementById('className');
+    const teacherNameEl = document.getElementById('teacherName');
+
+    const progressText = document.getElementById('progressText');
+    const timerText = document.getElementById('timerText');
+    const statusText = document.getElementById('statusText');
+    const answeredText = document.getElementById('answeredText');
+    const hintText = document.getElementById('hintText');
+    const questionText = document.getElementById('questionText');
+    const optionsWrap = document.getElementById('options');
+    const nextBtn = document.getElementById('nextBtn');
+
+    // Modal refs
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalOkBtn = document.getElementById('modalOkBtn');
+
+    // ====== Data (se carga desde questions.json) ======
+    let QUESTIONS = [];
+    let SECONDS_PER_QUESTION = 60;
+
+    async function loadQuestions() {
+      const res = await fetch("./questions.json", { cache: "no-store" });
+      const data = await res.json();
+
+      classNameEl.textContent = data.title || "Quiz";
+      teacherNameEl.textContent = `Profesor: ${data.teacher || "—"}`;
+
+      SECONDS_PER_QUESTION = Number(data.secondsPerQuestion || 60);
+      QUESTIONS = Array.isArray(data.questions) ? data.questions : [];
+
+      progressText.textContent = `0 de ${QUESTIONS.length}`;
+      timerText.textContent = "—";
+
+      // Validación básica
+      if (QUESTIONS.length === 0) {
+        showModal("No hay preguntas en questions.json. Agrega al menos 1 pregunta para iniciar.");
+        startBtn.disabled = true;
+      }
+    }
+
+    // ====== State ======
+    let studentName = "";
+    let startedAtISO = "";
+
+    let qIndex = 0;
+    let pendingPick = null;
+    let answers = []; // se crea con el tamaño de QUESTIONS
+
+    let timerId = null;
+    let remaining = 0;
+
+    // ====== Helpers ======
+    function nowISO() { return new Date().toISOString(); }
+
+    function pad2(n) { return String(n).padStart(2, '0'); }
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${pad2(m)}:${pad2(s)}`;
+    }
+
+    function normalizeName(s) { return (s || "").trim(); }
 
     function escapeHtml(str) {
       return String(str)
@@ -326,7 +464,44 @@
       return parts.join('_');
     }
 
-    // 6) Quiz rendering
+    // ====== Modal ======
+    function showModal(message) {
+      modalMessage.textContent = message;
+      modalBackdrop.style.display = "flex";
+    }
+    function hideModal() {
+      modalBackdrop.style.display = "none";
+    }
+    modalOkBtn.addEventListener("click", hideModal);
+
+    function stopTimer() {
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+    }
+
+    function startTimer() {
+      stopTimer();
+      remaining = SECONDS_PER_QUESTION;
+      timerText.textContent = formatTime(remaining);
+
+      timerId = setInterval(() => {
+        remaining -= 1;
+        if (remaining <= 0) {
+          timerText.textContent = "00:00";
+          stopTimer();
+          commitAndAdvance(true);
+          return;
+        }
+        timerText.textContent = formatTime(remaining);
+      }, 1000);
+    }
+
+    function updateStartButton() {
+      const name = normalizeName(studentNameInput.value);
+      startBtn.disabled = (name.length === 0 || QUESTIONS.length === 0);
+    }
     function renderQuestion() {
       const q = QUESTIONS[qIndex];
       pendingPick = null;
@@ -335,19 +510,20 @@
       progressText.textContent = `Pregunta ${qIndex + 1} de ${QUESTIONS.length}`;
       statusText.textContent = 'Elige la respuesta correcta. Luego presiona “Siguiente”.';
       answeredText.textContent = 'Sin responder';
-      hintText.innerHTML = `Cada pregunta tiene <strong>1 minuto</strong>. Si el tiempo termina, se envía en blanco.`;
+      hintText.innerHTML = `Cada pregunta tiene <strong>${Math.round(SECONDS_PER_QUESTION/60)} minuto</strong>. Si el tiempo termina, se envía en blanco.`;
 
       questionText.textContent = q.text;
       optionsWrap.innerHTML = '';
 
       const letters = ['A', 'B', 'C', 'D'];
+
       q.options.forEach((optText, i) => {
         const btn = document.createElement('button');
         btn.className = 'opt';
         btn.type = 'button';
         btn.innerHTML = `
           <span class="badge" aria-hidden="true">${letters[i]}</span>
-          <span class="label">${optText}</span>
+          <span class="label">${escapeHtml(optText)}</span>
         `;
 
         btn.addEventListener('click', () => {
@@ -365,7 +541,7 @@
     }
 
     function commitAndAdvance(fromTimeout = false) {
-      answers[qIndex] = pendingPick;
+      answers[qIndex] = pendingPick; // null si no escogió
       stopTimer();
       nextBtn.disabled = true;
 
@@ -387,7 +563,7 @@
     async function renderFinish() {
       stopTimer();
       progressText.textContent = `Finalizado (${QUESTIONS.length} preguntas)`;
-      timerText.textContent = '00:00';
+      timerText.textContent = "00:00";
 
       const letters = ['A', 'B', 'C', 'D'];
       const correct = answers.reduce((acc, a, i) => acc + (a === QUESTIONS[i].correctIndex ? 1 : 0), 0);
@@ -400,20 +576,22 @@
       const items = QUESTIONS.map((q, i) => {
         const user = answers[i];
         const isCorrect = user === q.correctIndex;
-        const userLabel = (user === null) ? 'En blanco' : `${letters[user]} — ${q.options[user]}`;
+        const userLabel = (user === null)
+          ? 'En blanco'
+          : `${letters[user]} — ${q.options[user]}`;
         const correctLabel = `${letters[q.correctIndex]} — ${q.options[q.correctIndex]}`;
         const badge = isCorrect ? '✅ Correcta' : '❌ Incorrecta';
 
         return `
           <div style="border: 1px solid var(--border); background: rgba(255,255,255,0.03); border-radius: 14px; padding: 12px;">
             <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
-              <div style="font-weight:700; line-height:1.25;">${i + 1}. ${q.text}</div>
+              <div style="font-weight:700; line-height:1.25;">${i + 1}. ${escapeHtml(q.text)}</div>
               <div style="white-space:nowrap; color: var(--muted); font-weight:650;">${badge}</div>
             </div>
             <div style="margin-top:8px; color: var(--muted); font-size: 14px; line-height:1.35;">
-              <div><strong style="color: var(--text);">Tu respuesta:</strong> ${userLabel}</div>
-              <div style="margin-top:4px;"><strong style="color: var(--text);">Respuesta correcta:</strong> ${correctLabel}</div>
-              <div style="margin-top:8px;"><strong style="color: var(--text);">Por qué es correcta:</strong> ${q.explanation || '—'}</div>
+              <div><strong style="color: var(--text);">Tu respuesta:</strong> ${escapeHtml(userLabel)}</div>
+              <div style="margin-top:4px;"><strong style="color: var(--text);">Respuesta correcta:</strong> ${escapeHtml(correctLabel)}</div>
+              <div style="margin-top:8px;"><strong style="color: var(--text);">Por qué es correcta:</strong> ${escapeHtml(q.explanation || '—')}</div>
             </div>
           </div>
         `;
@@ -426,7 +604,7 @@
               <div style="color: var(--muted); font-size: 14px;">Resumen</div>
               <div style="font-size: 18px; font-weight: 700; margin-top: 6px;">${pct}%</div>
               <div style="color: var(--muted); font-size: 14px; margin-top: 6px;">
-                Estudiante: <strong style="color: var(--text);">${studentName}</strong>
+                Estudiante: <strong style="color: var(--text);">${escapeHtml(studentName)}</strong>
               </div>
               <div style="color: var(--muted); font-size: 14px; margin-top: 6px;">
                 Correctas: <strong style="color: var(--text);">${correct}</strong> · Incorrectas: <strong style="color: var(--text);">${QUESTIONS.length - correct}</strong>
@@ -443,10 +621,11 @@
 
       document.getElementById('downloadBtn')?.addEventListener('click', downloadReport);
 
+      // Guardar en Sheets
       const finishedAtISO = nowISO();
       const durationSeconds = Math.max(0, Math.round((Date.parse(finishedAtISO) - Date.parse(startedAtISO)) / 1000));
-
       const saveEl = document.getElementById('saveStatus');
+
       try {
         const resp = await submitAttempt({
           name: studentName,
@@ -466,7 +645,6 @@
       hintText.innerHTML = 'Fin.';
       nextBtn.disabled = true;
     }
-
     function downloadReport() {
       const letters = ['A', 'B', 'C', 'D'];
       const correct = answers.reduce((acc, a, i) => acc + (a === QUESTIONS[i].correctIndex ? 1 : 0), 0);
@@ -477,6 +655,7 @@
         const isCorrect = user === q.correctIndex;
         const userLabel = (user === null) ? 'En blanco' : `${letters[user]} — ${q.options[user]}`;
         const correctLabel = `${letters[q.correctIndex]} — ${q.options[q.correctIndex]}`;
+
         return `
           <div style="border:1px solid #ddd; border-radius:10px; padding:12px; margin:12px 0;">
             <div style="display:flex; justify-content:space-between; gap:10px;">
@@ -497,13 +676,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Reporte — ${escapeHtml(studentName)} — Economía Internacional</title>
+  <title>Reporte — ${escapeHtml(studentName)} — ${escapeHtml(classNameEl.textContent)}</title>
 </head>
 <body style="font-family: Arial, Helvetica, sans-serif; margin: 24px; color: #111;">
   <h1 style="margin:0 0 6px 0;">Reporte de resultados</h1>
   <div style="margin:0 0 18px 0; color:#444;">
-    <div><strong>Clase:</strong> Economía Internacional</div>
-    <div><strong>Profesor:</strong> William Mendieta</div>
+    <div><strong>Clase:</strong> ${escapeHtml(classNameEl.textContent)}</div>
+    <div><strong>Profesor:</strong> ${escapeHtml(teacherNameEl.textContent.replace(/^Profesor:\\s*/,'') )}</div>
     <div><strong>Estudiante:</strong> ${escapeHtml(studentName)}</div>
     <div><strong>Puntaje:</strong> ${correct} / ${QUESTIONS.length} (${pct}%)</div>
   </div>
@@ -515,36 +694,35 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `reporte_${safeFilenameFromName(studentName)}_economia_internacional.html`;
+      a.download = `reporte_${safeFilenameFromName(studentName)}_${safeFilenameFromName(classNameEl.textContent)}.html`;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
     }
 
-    // 7) Events
+    // ====== Events ======
     studentNameInput.addEventListener('input', updateStartButton);
 
     startBtn.addEventListener('click', async () => {
       const name = normalizeName(studentNameInput.value);
-      if (!name) {
-        setStartError('Escribe tu nombre para continuar.');
-        return;
-      }
+
+      if (!name) return;
 
       startBtn.disabled = true;
       startBtn.textContent = 'Validando…';
-      setStartError('');
 
       try {
         const resp = await validateStudent(name);
+
         if (!resp?.ok) {
-          setStartError(resp?.error || 'Nombre no autorizado. Verifica que esté exactamente como fue registrado.');
+          showModal(resp?.error || "Nombre no autorizado. Verifica que esté exactamente como fue registrado (primer nombre y primer apellido).");
           startBtn.textContent = 'Iniciar';
           updateStartButton();
           return;
         }
 
+        // OK
         studentName = name;
         startedAtISO = nowISO();
 
@@ -552,11 +730,11 @@
         quizScreen.style.display = 'grid';
 
         qIndex = 0;
-        for (let i = 0; i < answers.length; i++) answers[i] = null;
+        answers = Array(QUESTIONS.length).fill(null);
 
         renderQuestion();
       } catch (e) {
-        setStartError(`Error validando nombre: ${String(e)}`);
+        showModal(`Error validando nombre: ${String(e)}`);
         startBtn.textContent = 'Iniciar';
         updateStartButton();
       }
@@ -564,10 +742,11 @@
 
     nextBtn.addEventListener('click', () => commitAndAdvance(false));
 
-    // 8) Init
-    progressText.textContent = `0 de ${QUESTIONS.length}`;
-    timerText.textContent = '—';
-    updateStartButton();
+    // ====== Init ======
+    (async function init() {
+      await loadQuestions();
+      updateStartButton();
+    })();
   </script>
 </body>
 </html>
