@@ -265,7 +265,8 @@
     let SECONDS_PER_QUESTION = 60;
 
     async function loadQuestions() {
-      const res = await fetch("./questions.json", { cache: "no-store" });
+      const BASE_URL = window.location.pathname.replace(/\/[^\/]*$/, '/');
+      const res = await fetch(`${BASE_URL}questions.json`, { cache: "no-store" });
       const data = await res.json();
 
       classNameEl.textContent = data.title || "Quiz";
