@@ -67,7 +67,7 @@
       display:flex;
       gap:10px;
       align-items:flex-start;
-      min-height:64px; /* mejor para celular */
+      min-height:64px;
     }
     button.opt:hover{transform:translateY(-1px);border-color:rgba(234,240,255,.25)}
     button.opt:active{transform:translateY(0)}
@@ -108,7 +108,6 @@
     footer{color:rgba(234,240,255,.55);font-size:12px;text-align:center;margin-top:2px}
     a{color:rgba(234,240,255,.85);text-decoration:none;border-bottom:1px dashed rgba(234,240,255,.35)}
 
-    /* ===== MODAL (pop-up) ===== */
     .modal-backdrop{
       position:fixed; inset:0;
       background:rgba(0,0,0,.55);
@@ -152,7 +151,6 @@
       </div>
     </header>
 
-    <!-- Pantalla inicial -->
     <section class="card" id="startScreen" aria-live="polite">
       <div class="qmeta">
         <span style="font-weight:700;">Antes de empezar</span>
@@ -176,7 +174,6 @@
       </div>
     </section>
 
-    <!-- Pantalla del quiz -->
     <section class="card question" id="quizScreen" aria-live="polite" style="display:none;">
       <div class="qmeta">
         <span id="statusText">Elige la respuesta correcta.</span>
@@ -198,13 +195,10 @@
       </div>
     </section>
 
-    <footer>
-      Compatible con celular ✅ (diseño responsivo).
-    </footer>
+    <footer>MM Consulting Group</footer>
 
   </main>
 
-  <!-- MODAL -->
   <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal">
       <h3 id="modalTitle">Aviso</h3>
@@ -216,7 +210,6 @@
   </div>
 
   <script>
-    // ====== ENDPOINT (Google Apps Script) ======
     const ENDPOINT = "https://script.google.com/macros/s/AKfycbyoQyDpwZbjDcflfPcrCXMfKjtO5cLNXTMSF-aFltI3zwEkoSDIZhkG7-ZNEgl17dCP/exec";
 
     async function postToEndpoint(payload) {
@@ -236,7 +229,6 @@
       return await postToEndpoint({ action: "submit", ...payload });
     }
 
-    // ====== UI refs ======
     const startScreen = document.getElementById('startScreen');
     const quizScreen = document.getElementById('quizScreen');
 
@@ -255,57 +247,61 @@
     const optionsWrap = document.getElementById('options');
     const nextBtn = document.getElementById('nextBtn');
 
-    // Modal refs
     const modalBackdrop = document.getElementById('modalBackdrop');
     const modalMessage = document.getElementById('modalMessage');
     const modalOkBtn = document.getElementById('modalOkBtn');
 
-    // ====== Data (se carga desde questions.json) ======
     let QUESTIONS = [];
     let SECONDS_PER_QUESTION = 60;
 
     async function loadQuestions() {
-      const BASE_URL = window.location.pathname.replace(/\/[^\/]*$/, '/');
-      const res = await fetch(`${BASE_URL}questions.json`, { cache: "no-store" });
-      const data = await res.json();
+      try {
+        const BASE_URL = window.location.pathname.replace(/\/[^\/]*$/, '/');
+        const res = await fetch(`${BASE_URL}questions.json`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
 
-      classNameEl.textContent = data.title || "Quiz";
-      teacherNameEl.textContent = `Profesor: ${data.teacher || "—"}`;
+        classNameEl.textContent = data.title || "Quiz";
+        teacherNameEl.textContent = `Profesor: ${data.teacher || "—"}`;
 
-      SECONDS_PER_QUESTION = Number(data.secondsPerQuestion || 60);
-      QUESTIONS = Array.isArray(data.questions) ? data.questions : [];
+        SECONDS_PER_QUESTION = Number(data.secondsPerQuestion || 60);
+        QUESTIONS = Array.isArray(data.questions) ? data.questions : [];
 
-      progressText.textContent = `0 de ${QUESTIONS.length}`;
-      timerText.textContent = "—";
+        progressText.textContent = `0 de ${QUESTIONS.length}`;
+        timerText.textContent = "—";
 
-      // Validación básica
-      if (QUESTIONS.length === 0) {
-        showModal("No hay preguntas en questions.json. Agrega al menos 1 pregunta para iniciar.");
+        if (QUESTIONS.length === 0) {
+          showModal("No hay preguntas en questions.json. Agrega al menos 1 pregunta para iniciar.");
+          startBtn.disabled = true;
+        }
+      } catch (e) {
+        classNameEl.textContent = "Error cargando preguntas";
+        teacherNameEl.textContent = "Profesor: —";
+        progressText.textContent = "0 de 0";
+        timerText.textContent = "—";
         startBtn.disabled = true;
+        showModal(`No se pudo cargar questions.json. Detalle: ${String(e)}`);
+        console.error(e);
       }
     }
 
-    // ====== State ======
     let studentName = "";
     let startedAtISO = "";
 
     let qIndex = 0;
     let pendingPick = null;
-    let answers = []; // se crea con el tamaño de QUESTIONS
+    let answers = [];
 
     let timerId = null;
     let remaining = 0;
 
-    // ====== Helpers ======
     function nowISO() { return new Date().toISOString(); }
-
     function pad2(n) { return String(n).padStart(2, '0'); }
     function formatTime(sec) {
       const m = Math.floor(sec / 60);
       const s = sec % 60;
       return `${pad2(m)}:${pad2(s)}`;
     }
-
     function normalizeName(s) { return (s || "").trim(); }
 
     function escapeHtml(str) {
@@ -322,7 +318,6 @@
       return parts.join('_');
     }
 
-    // ====== Modal ======
     function showModal(message) {
       modalMessage.textContent = message;
       modalBackdrop.style.display = "flex";
@@ -360,149 +355,7 @@
       const name = normalizeName(studentNameInput.value);
       startBtn.disabled = (name.length === 0 || QUESTIONS.length === 0);
     }
-    // ====== ENDPOINT (Google Apps Script) ======
-    const ENDPOINT = "https://script.google.com/macros/s/AKfycbyoQyDpwZbjDcflfPcrCXMfKjtO5cLNXTMSF-aFltI3zwEkoSDIZhkG7-ZNEgl17dCP/exec";
 
-    async function postToEndpoint(payload) {
-      const res = await fetch(ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-      return await res.json();
-    }
-
-    async function validateStudent(name) {
-      return await postToEndpoint({ action: "validate", name });
-    }
-
-    async function submitAttempt(payload) {
-      return await postToEndpoint({ action: "submit", ...payload });
-    }
-
-    // ====== UI refs ======
-    const startScreen = document.getElementById('startScreen');
-    const quizScreen = document.getElementById('quizScreen');
-
-    const studentNameInput = document.getElementById('studentNameInput');
-    const startBtn = document.getElementById('startBtn');
-
-    const classNameEl = document.getElementById('className');
-    const teacherNameEl = document.getElementById('teacherName');
-
-    const progressText = document.getElementById('progressText');
-    const timerText = document.getElementById('timerText');
-    const statusText = document.getElementById('statusText');
-    const answeredText = document.getElementById('answeredText');
-    const hintText = document.getElementById('hintText');
-    const questionText = document.getElementById('questionText');
-    const optionsWrap = document.getElementById('options');
-    const nextBtn = document.getElementById('nextBtn');
-
-    // Modal refs
-    const modalBackdrop = document.getElementById('modalBackdrop');
-    const modalMessage = document.getElementById('modalMessage');
-    const modalOkBtn = document.getElementById('modalOkBtn');
-
-    // ====== Data (se carga desde questions.json) ======
-    let QUESTIONS = [];
-    let SECONDS_PER_QUESTION = 60;
-
-    async function loadQuestions() {
-      const res = await fetch("./questions.json", { cache: "no-store" });
-      const data = await res.json();
-
-      classNameEl.textContent = data.title || "Quiz";
-      teacherNameEl.textContent = `Profesor: ${data.teacher || "—"}`;
-
-      SECONDS_PER_QUESTION = Number(data.secondsPerQuestion || 60);
-      QUESTIONS = Array.isArray(data.questions) ? data.questions : [];
-
-      progressText.textContent = `0 de ${QUESTIONS.length}`;
-      timerText.textContent = "—";
-
-      // Validación básica
-      if (QUESTIONS.length === 0) {
-        showModal("No hay preguntas en questions.json. Agrega al menos 1 pregunta para iniciar.");
-        startBtn.disabled = true;
-      }
-    }
-
-    // ====== State ======
-    let studentName = "";
-    let startedAtISO = "";
-
-    let qIndex = 0;
-    let pendingPick = null;
-    let answers = []; // se crea con el tamaño de QUESTIONS
-
-    let timerId = null;
-    let remaining = 0;
-
-    // ====== Helpers ======
-    function nowISO() { return new Date().toISOString(); }
-
-    function pad2(n) { return String(n).padStart(2, '0'); }
-    function formatTime(sec) {
-      const m = Math.floor(sec / 60);
-      const s = sec % 60;
-      return `${pad2(m)}:${pad2(s)}`;
-    }
-
-    function normalizeName(s) { return (s || "").trim(); }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
-    }
-
-    function safeFilenameFromName(name) {
-      const parts = String(name).trim().split(' ').filter(Boolean);
-      return parts.join('_');
-    }
-
-    // ====== Modal ======
-    function showModal(message) {
-      modalMessage.textContent = message;
-      modalBackdrop.style.display = "flex";
-    }
-    function hideModal() {
-      modalBackdrop.style.display = "none";
-    }
-    modalOkBtn.addEventListener("click", hideModal);
-
-    function stopTimer() {
-      if (timerId) {
-        clearInterval(timerId);
-        timerId = null;
-      }
-    }
-
-    function startTimer() {
-      stopTimer();
-      remaining = SECONDS_PER_QUESTION;
-      timerText.textContent = formatTime(remaining);
-
-      timerId = setInterval(() => {
-        remaining -= 1;
-        if (remaining <= 0) {
-          timerText.textContent = "00:00";
-          stopTimer();
-          commitAndAdvance(true);
-          return;
-        }
-        timerText.textContent = formatTime(remaining);
-      }, 1000);
-    }
-
-    function updateStartButton() {
-      const name = normalizeName(studentNameInput.value);
-      startBtn.disabled = (name.length === 0 || QUESTIONS.length === 0);
-    }
     function renderQuestion() {
       const q = QUESTIONS[qIndex];
       pendingPick = null;
@@ -542,7 +395,7 @@
     }
 
     function commitAndAdvance(fromTimeout = false) {
-      answers[qIndex] = pendingPick; // null si no escogió
+      answers[qIndex] = pendingPick;
       stopTimer();
       nextBtn.disabled = true;
 
@@ -577,9 +430,7 @@
       const items = QUESTIONS.map((q, i) => {
         const user = answers[i];
         const isCorrect = user === q.correctIndex;
-        const userLabel = (user === null)
-          ? 'En blanco'
-          : `${letters[user]} — ${q.options[user]}`;
+        const userLabel = (user === null) ? 'En blanco' : `${letters[user]} — ${q.options[user]}`;
         const correctLabel = `${letters[q.correctIndex]} — ${q.options[q.correctIndex]}`;
         const badge = isCorrect ? '✅ Correcta' : '❌ Incorrecta';
 
@@ -622,7 +473,6 @@
 
       document.getElementById('downloadBtn')?.addEventListener('click', downloadReport);
 
-      // Guardar en Sheets
       const finishedAtISO = nowISO();
       const durationSeconds = Math.max(0, Math.round((Date.parse(finishedAtISO) - Date.parse(startedAtISO)) / 1000));
       const saveEl = document.getElementById('saveStatus');
@@ -646,6 +496,7 @@
       hintText.innerHTML = 'Fin.';
       nextBtn.disabled = true;
     }
+
     function downloadReport() {
       const letters = ['A', 'B', 'C', 'D'];
       const correct = answers.reduce((acc, a, i) => acc + (a === QUESTIONS[i].correctIndex ? 1 : 0), 0);
@@ -702,12 +553,10 @@
       URL.revokeObjectURL(url);
     }
 
-    // ====== Events ======
     studentNameInput.addEventListener('input', updateStartButton);
 
     startBtn.addEventListener('click', async () => {
       const name = normalizeName(studentNameInput.value);
-
       if (!name) return;
 
       startBtn.disabled = true;
@@ -723,7 +572,6 @@
           return;
         }
 
-        // OK
         studentName = name;
         startedAtISO = nowISO();
 
@@ -743,7 +591,6 @@
 
     nextBtn.addEventListener('click', () => commitAndAdvance(false));
 
-    // ====== Init ======
     (async function init() {
       await loadQuestions();
       updateStartButton();
