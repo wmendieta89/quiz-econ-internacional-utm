@@ -1,0 +1,87 @@
+{
+  "title": "Economía Internacional",
+  "teacher": "William Mendieta",
+  "secondsPerQuestion": 60,
+  "questions": [
+    {
+      "id": 1,
+      "text": "¿Cuál es el objetivo principal de la política monetaria?",
+      "options": [
+        "Aumentar el gasto público",
+        "Estabilizar precios y actividad económica",
+        "Fijar salarios en el sector privado",
+        "Reducir impuestos de forma permanente"
+      ],
+      "correctIndex": 1,
+      "explanation": "En marcos modernos, el banco central busca estabilidad de precios y suavizar fluctuaciones del ciclo; la tasa de política influye en condiciones financieras y demanda agregada."
+    },
+    {
+      "id": 2,
+      "text": "¿Qué es el PIB real?",
+      "options": [
+        "PIB medido a precios corrientes",
+        "PIB ajustado por inflación",
+        "Ingresos fiscales del gobierno",
+        "Exportaciones netas"
+      ],
+      "correctIndex": 1,
+      "explanation": "El PIB real descuenta el efecto de precios para reflejar cambios en cantidades (actividad) y no solo variaciones nominales."
+    },
+    {
+      "id": 3,
+      "text": "Pregunta 3 (placeholder)",
+      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
+      "correctIndex": 0,
+      "explanation": "Explicación breve aquí."
+    },
+    {
+      "id": 4,
+      "text": "Pregunta 4 (placeholder)",
+      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
+      "correctIndex": 0,
+      "explanation": "Explicación breve aquí."
+    },
+    {
+      "id": 5,
+      "text": "Pregunta 5 (placeholder)",
+      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
+      "correctIndex": 0,
+      "explanation": "Explicación breve aquí."
+    },
+    {
+      "id": 6,
+      "text": "Pregunta 6 (placeholder)",
+      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
+      "correctIndex": 0,
+      "explanation": "Explicación breve aquí."
+    },
+    {
+      "id": 7,
+      "text": "Pregunta 7 (placeholder)",
+      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
+      "correctIndex": 0,
+      "explanation": "Explicación breve aquí."
+    },
+    {
+      "id": 8,
+      "text": "Pregunta 8 (placeholder)",
+      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
+      "correctIndex": 0,
+      "explanation": "Explicación breve aquí."
+    },
+    {
+      "id": 9,
+      "text": "Pregunta 9 (placeholder)",
+      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
+      "correctIndex": 0,
+      "explanation": "Explicación breve aquí."
+    },
+    {
+      "id": 10,
+      "text": "Pregunta 10 (placeholder)",
+      "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
+      "correctIndex": 0,
+      "explanation": "Explicación breve aquí."
+    }
+  ]
+}
