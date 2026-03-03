@@ -7,7 +7,7 @@
   <style>
     :root { --bg:#0b1220; --text:#eaf0ff; --muted:rgba(234,240,255,.75); --border:rgba(234,240,255,.12); }
     *{box-sizing:border-box}
-    body{
+    body{E
       margin:0;
       font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
       background:
@@ -210,7 +210,7 @@
   </div>
 
   <script>
-    const ENDPOINT = "https://script.google.com/macros/s/AKfycbwPTuIQDQX4UPd8iM8AfQ6HhEJxVaW5BH-iyX77G5unC44s0BsbihgtQmcFjyInuxq1/exec";
+    const ENDPOINT = "https://script.googleusercontent.com/macros/echo?user_content_key=AY5xjrTtn7cK95Z6vz2ePleTzJzAdg4FlnApf7ri91bezNUsHFEn7TSoWDpwOG2uKlGDO1BQS9eF-BHh0DgDMubhWmWKYqhGnG0zePbgFvuqUluX35VyTpOmiKLEt9zBXil-9Gt51eUmqPDb7cmhv0nUFSmPG_TnqPPgsH1-lDkAz00xDCpPbnzEjk-zzL9sns2ZrY-Dl_Tv3p-ZibTJjRi79vHaJ7rJ-yysO9xdY5Nh4U0zzjHpFEwe7eY-I0GNuhS7V3fkeLUEz3440g-FUl4PHrbK2yE7cw&lib=MqY-A6SuahWGx1fe-39o_OvwiAf2rD0kW";
 
     async function postToEndpoint(payload) {
       const res = await fetch(ENDPOINT, {
